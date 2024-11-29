@@ -67,4 +67,87 @@ class BoraWallet extends BoraService
         //TODO:: add withdrawal form
     }
 
+
+
+    //STK Push
+    public function addPayment($params  = []){
+        $pdo = New PDO("mysql:dbhost=127.0.0.1;dbname=ffos_db","root","");	
+    
+        try {
+    
+            $pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+    
+            $paymentType = 'mpesa';
+    
+            $saveorder = $pdo->prepare("INSERT INTO payments
+                                        (
+                                            `order_id`,
+                                            `order_ref`,
+                                            `amnt_paid`,
+                                            `amount`,
+                                            `processed_by`,
+                                            `payment_method`,
+                                            `trans_id`
+                                            ) 
+                                            VALUES(?,?,?,?,?,?,?)");
+            
+            $saveorder -> bindValue(1,$params['orderID']);
+            $saveorder -> bindValue(2,$params['orderID']);
+            $saveorder -> bindValue(3,$params['Amount']);
+            $saveorder -> bindValue(4,$params['Amount']);
+            $saveorder -> bindValue(5,$params['PhoneNumber']);
+            $saveorder -> bindValue(6,$paymentType);
+            $saveorder -> bindValue(7,$params['MpesaReceiptNumber']);
+    
+            if($saveorder -> execute()){
+                //Added to transactions
+                return true;
+            }else{
+                die(print_r($saveorder->errorInfo()));
+            }
+        
+            
+        } catch (PDOException $e) {
+    
+            echo $e->getMessage();
+            
+        }
+    }
+    
+    public function addTransaction($orderID, $amount = 0){
+
+        $pdo = New PDO("mysql:dbhost=127.0.0.1;dbname=ffos_db","root","");	
+    
+        try {
+    
+            $pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+    
+            $checkIfExists = $pdo->prepare("SELECT COUNT(*) FROM tbltransactions WHERE order_id = ? AND amount = ?");
+            $checkIfExists->execute([$orderID, $amount]);
+            $count = $checkIfExists->fetchColumn();
+    
+            if ($count == 0) {
+    
+                $saveorder = $pdo->prepare("INSERT INTO tbltransactions (order_id, amount) VALUES (?, ?)");
+    
+                
+                $saveorder -> bindValue(1,$orderID);
+                $saveorder -> bindValue(2,$amount);
+    
+                if($saveorder -> execute()){
+                    //Added to transactions
+    
+                }else{
+                    die(print_r($saveorder->errorInfo()));
+                }
+            }
+        
+            
+        } catch (PDOException $e) {
+    
+            echo $e->getMessage();
+            
+        }
+    }
+
 }
