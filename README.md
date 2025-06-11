@@ -38,7 +38,7 @@ Below is an example of how to use the `BoraSMS` class.
 <?php
 require 'vendor/autoload.php';
 
-use ILEBORA\BoraSMS;
+use ILEBORA\BoraWallet;
 
 try {
     // Option 1: Using the constructor to load from environment variables
