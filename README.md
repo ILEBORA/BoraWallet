@@ -25,14 +25,14 @@ Before using `BoraWallet`, you'll need to provide your API credentials (API key,
 Create a `.env` file in the root of your project with the following contents:
 
 ```plaintext
-BORA_SMS_API_KEY=your_api_key
-BORA_SMS_USER_ID=your_user_id
-BORA_SMS_DISPLAY_NAME=your_display_name
+BORA_API_KEY=your_api_key
+BORA_USER_ID=your_user_id
+BORA_DISPLAY_NAME=your_display_name
 ```
 
 ### Example Usage
 
-Below is an example of how to use the `BoraSMS` class.
+Below is an example of how to use the `BoraWallet` class.
 
 ```php
 <?php
@@ -42,19 +42,19 @@ use ILEBORA\BoraWallet;
 
 try {
     // Option 1: Using the constructor to load from environment variables
-    $sms = new BoraWallet();
+    $wallet = new BoraWallet();
 
     // Option 2: Alternatively, set credentials using setters
-    // $sms = (new BoraWallet())
+    // $wallet = (new BoraWallet())
     //     ->setApiKey('your_api_key')
     //     ->setUserID('your_user_id')
     //     ->setDisplayName('your_display_name');
 
     // Option3: Set the API version you are taregeting
-    // $sms->setApiVersion('1.1');
+    // $wallet->setApiVersion('1.1');
 
     // Set other properties
-    $sms->setPhone('0113703323')
+    $wallet->setPhone('0113703323')
         ->setAmount(250)
          // ->setBackLink('https://yourdomain.com/back')
         // ->setOnSuccess('success_callback_url')
