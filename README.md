@@ -1,18 +1,18 @@
-# BoraSMS
+# BoraWallet
 
-`BoraSMS` is a PHP library for sending SMS messages using a custom API. This library allows you to easily send SMS messages, configure success and failure handlers, and customize your API credentials.
+`BoraWallet` is a PHP library for initiating mobile wallet payments such as MPESA STK push using a custom API. It builds on the BoraService base class and provides an easy way to initiate and manage wallet transactions in your application.
 
 ## Installation
 
 To install the package, you can use Composer:
 
 ```bash
-composer require ilebora/borasms
+composer require ilebora/borawallet
 ```
 
 ## Configuration
 
-Before using `BoraSMS`, you'll need to provide your API credentials (API key, user ID, and display name). There are two ways to do this:
+Before using `BoraWallet`, you'll need to provide your API credentials (API key, user ID, and display name). There are two ways to do this:
 
 1. **Using Environment Variables (`.env` file)**  
    The package can automatically read the API credentials from your `.env` file using [vlucas/phpdotenv](https://github.com/vlucas/phpdotenv).
@@ -42,10 +42,10 @@ use ILEBORA\BoraSMS;
 
 try {
     // Option 1: Using the constructor to load from environment variables
-    $sms = new BoraSMS();
+    $sms = new BoraWallet();
 
     // Option 2: Alternatively, set credentials using setters
-    // $sms = (new BoraSMS())
+    // $sms = (new BoraWallet())
     //     ->setApiKey('your_api_key')
     //     ->setUserID('your_user_id')
     //     ->setDisplayName('your_display_name');
@@ -53,18 +53,19 @@ try {
     // Option3: Set the API version you are taregeting
     // $sms->setApiVersion('1.1');
 
-    // Set other SMS properties
+    // Set other properties
     $sms->setPhone('0113703323')
-        ->setMessage('Hello, this is a test message!')
+        ->setAmount(250)
+         // ->setBackLink('https://yourdomain.com/back')
         // ->setOnSuccess('success_callback_url')
         // ->setOnFailure('failure_callback_url')
         ;
 
-    // Send the SMS
-    $response = $sms->sendSMS();
+    // Generate
+    $formHtml = $wallet->getCheckoutForm();
 
     // Handle the response
-    echo "SMS Sent! Response: " . $response;
+    echo $formHtml;
 
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
@@ -86,13 +87,19 @@ try {
   Sets the user ID used for authentication.
 
 - **`setDisplayName($displayName)`**  
-  Sets the display name used for sending SMS.
+  Sets the display name used for Bora Wallet.
 
 - **`setPhone($phone)`**  
   Sets the recipient phone number.
 
-- **`setMessage($message)`**  
-  Sets the message to be sent.
+- **`setAmount($amount = 100)`**  
+  Set the payment amount. Defaults to 100.
+  
+- **`getCheckoutForm()`**  
+  Returns a JSON-encoded HTML form for initiating a wallet payment.
+
+- **`setBackLink($link)`**  
+  Sets the URL to be added as the backlink to your app.
 
 - **`setOnSuccess($onSuccess)`**  
   Sets the URL to be called on success.
@@ -100,12 +107,11 @@ try {
 - **`setOnFailure($onFailure)`**  
   Sets the URL to be called on failure.
 
-- **`sendSMS()`**  
-  Sends the SMS and returns the response from the API.
-
-### Handling Responses
-
-The `sendSMS()` method returns the JSON API response. You can use this response to check the status of the SMS request or handle it accordingly (e.g., display a success message or log an error).
+- **`getBalance()`**  
+  (To be implemented)
+  
+- **`getWithdrawalForm()`**  
+  (To be implemented)
 
 ### Example Callback Response
 
@@ -113,20 +119,13 @@ The response returned by the API might look like this:
 
 ```json
 {
-  "code":"x001",
-  "response":"success",
-  "message":"Message Sent.",
-    "data":{
-        "response-code":200,
-        "response-description":"Success",
-        "mobile":25412345678,
-        "messageid":"abcdEFH123",
-        "networkid":1
-        }
+  "status": "success",
+  "html": "<form>...</form>",
+  "message": "STK push initiated"
 }
 ```
 
-You can process this response as needed to update your application's UI or log the result.
+Extract and embed the html field in your application to initiate payment.
 
 ---
 
